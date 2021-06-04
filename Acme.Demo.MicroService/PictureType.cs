@@ -8,7 +8,7 @@ namespace Acme.Demo.MicroService
 {
     public enum PictureType
     {
-        Fractal = 0,
-        Random = 1
+        Random = 0,
+        Advanced = 1,
     }
 }

@@ -20,7 +20,7 @@ namespace Acme.Demo.MicroServices.DrawingMentor
 
     public class MentorHostedService : IHostedService
     {
-        private static readonly Random Dice = new Random();
+        private static readonly Random Dice = new();
         private readonly IConfiguration configuration;
         private Timer timer;
 

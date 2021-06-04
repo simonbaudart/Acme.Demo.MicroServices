@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroService", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroServices.Drawer", "Acme.Demo.MicroServices.Drawer\Acme.Demo.MicroServices.Drawer.csproj", "{ACE00CE7-0CF4-4893-8EDE-E176DA79B961}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroServices.DrawerAdvanced", "Acme.Demo.MicroServices.DrawerAdvanced\Acme.Demo.MicroServices.DrawerAdvanced.csproj", "{2C2F62B7-BAA8-4B42-A0A7-9920C0358B80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{ACE00CE7-0CF4-4893-8EDE-E176DA79B961}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE00CE7-0CF4-4893-8EDE-E176DA79B961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE00CE7-0CF4-4893-8EDE-E176DA79B961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2F62B7-BAA8-4B42-A0A7-9920C0358B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2F62B7-BAA8-4B42-A0A7-9920C0358B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2F62B7-BAA8-4B42-A0A7-9920C0358B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2F62B7-BAA8-4B42-A0A7-9920C0358B80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

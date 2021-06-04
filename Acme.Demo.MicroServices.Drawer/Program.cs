@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Acme.Demo.MicroServices.DrawingMentor
+namespace Acme.Demo.MicroServices.Drawer
 {
     using System;
     using System.Linq;

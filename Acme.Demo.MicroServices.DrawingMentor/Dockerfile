@@ -7,11 +7,11 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY . ./
+COPY / ./
 RUN dotnet restore
 
 # Copy everything else and build
-RUN dotnet publish -c Release -o out
+RUN dotnet publish Acme.Demo.MicroServices.DrawingMentor -c Release -o out
 
 FROM base AS final
 WORKDIR /app

@@ -8,7 +8,6 @@ namespace Acme.Demo.MicroServices.DrawingMentor
 {
     using System;
     using System.Linq;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -21,6 +20,7 @@ namespace Acme.Demo.MicroServices.DrawingMentor
 
     public class MentorHostedService : IHostedService
     {
+        private static readonly Random Dice = new Random();
         private readonly IConfiguration configuration;
         private Timer timer;
 
@@ -40,8 +40,6 @@ namespace Acme.Demo.MicroServices.DrawingMentor
             this.timer?.Dispose();
             return Task.CompletedTask;
         }
-
-        private static readonly Random Dice = new Random();
 
         private async void DoWork(object state)
         {

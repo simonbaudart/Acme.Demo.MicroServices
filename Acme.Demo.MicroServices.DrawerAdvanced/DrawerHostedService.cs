@@ -94,23 +94,24 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
 
         private void DrawAdvancedImage(PictureRequest pictureRequest)
         {
-            int previousR = -1, previousG = -1, previousB = -1;
+            int previousA = -1, previousR = -1, previousG = -1, previousB = -1;
 
             using var bitmap = new Bitmap(pictureRequest.Height, pictureRequest.Width);
 
             for (var x = 0; x < pictureRequest.Height; x++)
             for (var y = 0; y < pictureRequest.Width; y++)
             {
+                previousA = this.ComputeNextColor(previousA);
                 previousR = this.ComputeNextColor(previousR);
                 previousG = this.ComputeNextColor(previousG);
                 previousB = this.ComputeNextColor(previousB);
 
-                var color = Color.FromArgb(previousR, previousG, previousB);
+                var color = Color.FromArgb(previousA, previousR, previousG, previousB);
                 bitmap.SetPixel(x, y, color);
             }
 
             var imageName = Guid.NewGuid();
-            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.png");
+            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.bmp");
         }
 
         private int ComputeNextColor(int previous)
@@ -130,12 +131,12 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
             for (var x = 0; x < pictureRequest.Height; x++)
             for (var y = 0; y < pictureRequest.Width; y++)
             {
-                var color = Color.FromArgb(Dice.Next(0, 256), Dice.Next(0, 256), Dice.Next(0, 256));
+                var color = Color.FromArgb(Dice.Next(0, 256),Dice.Next(0, 256), Dice.Next(0, 256), Dice.Next(0, 256));
                 bitmap.SetPixel(x, y, color);
             }
 
             var imageName = Guid.NewGuid();
-            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.png");
+            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.bmp");
         }
     }
 }

@@ -66,7 +66,9 @@ namespace Acme.Demo.MicroServices.DrawingMentor
 
             var pictureRequest = new PictureRequest
             {
-                PictureType = (PictureType)Dice.Next(0, 2)
+                PictureType = (PictureType)Dice.Next(0, 2),
+                Height = Dice.Next(10, 61) * 100,
+                Width = Dice.Next(10, 61) * 100,
             };
 
             var message = new ServiceBusMessage("Create Picture");

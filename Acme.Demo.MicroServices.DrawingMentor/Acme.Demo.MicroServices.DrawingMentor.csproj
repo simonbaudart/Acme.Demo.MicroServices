@@ -9,4 +9,12 @@
       <Content Remove="stylecop.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Acme.Demo.MicroService\Acme.Demo.MicroService.csproj" />
+    </ItemGroup>
+
 </Project>

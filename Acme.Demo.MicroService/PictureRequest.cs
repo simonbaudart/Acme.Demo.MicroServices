@@ -8,6 +8,9 @@ namespace Acme.Demo.MicroService
 {
     public class PictureRequest
     {
+        /// <summary>
+        /// Gets or sets the picture type.
+        /// </summary>
         public PictureType PictureType { get; set; }
 
         /// <summary>

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroServices.Dra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroServices.DrawerWavenet", "Acme.Demo.MicroServices.DrawerWavenet\Acme.Demo.MicroServices.DrawerWavenet.csproj", "{F50D2D5F-45A4-4A5B-9852-942C3F858ABE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acme.Demo.MicroServices.DrawerWavenet.Tests", "Acme.Demo.MicroServices.DrawerWavenet.Tests\Acme.Demo.MicroServices.DrawerWavenet.Tests.csproj", "{FB80EA31-5BED-4F67-BDD6-E5D2CAA1A620}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{F50D2D5F-45A4-4A5B-9852-942C3F858ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F50D2D5F-45A4-4A5B-9852-942C3F858ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F50D2D5F-45A4-4A5B-9852-942C3F858ABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB80EA31-5BED-4F67-BDD6-E5D2CAA1A620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB80EA31-5BED-4F67-BDD6-E5D2CAA1A620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB80EA31-5BED-4F67-BDD6-E5D2CAA1A620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB80EA31-5BED-4F67-BDD6-E5D2CAA1A620}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

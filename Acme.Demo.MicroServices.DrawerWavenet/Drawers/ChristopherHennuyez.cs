@@ -21,28 +21,62 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
         /// <returns>The fully drawed Bitmap with your most advanced painting skills !</returns>
         public Bitmap Draw(int height, int width)
         {
-            int x, y;
-            Bitmap bitmap = new Bitmap(width, height);
-            Random rand = new Random();
-            if (width > 1000 || height > 6000)
+            if (width >= 1000 && height <= 6000 && width <= 6000 && height >= 1000)
             {
-                Console.WriteLine($"Drawing bitmap with inputed height/width values ! ({height}, {width})");
+                int x, y, i, j;
+                Bitmap bitmap = new Bitmap(width, height);
+                Random rand = new Random();
+                int[,] sign = new int[,]
+                {
+                    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                    { 0, 1, 1, 1, 1, 1, 0, 0, 0 },
+                    { 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+                    { 0, 1, 0, 0, 1, 0, 0, 1, 0 },
+                    { 0, 1, 0, 0, 1, 0, 0, 1, 0 },
+                    { 0, 1, 1, 1, 1, 1, 1, 1, 0 },
+                    { 0, 0, 0, 0, 1, 0, 0, 1, 0 },
+                    { 0, 0, 0, 0, 1, 0, 0, 1, 0 }
+                };
 
+                Console.WriteLine($"Drawing bitmap with inputed height/width values ! ({height}, {width})");
                 // Horizontal
-                for (x = 0; x < width; x++)
+                for (x = 1; x < width; x++)
                 {
                     // Vertical
-                    for (y = 0; y < height; y++)
+                    for (y = 1; y < height; y++)
                     {
+                        // Get Random Color
+
                         int red = rand.Next(256);
                         int green = rand.Next(256);
                         int blue = rand.Next(256);
                         Color pixelColor = Color.FromArgb(red, green, blue);
+
+                        // Draw pixel at position X, Y
                         bitmap.SetPixel(x, y, pixelColor);
                     }
                 }
 
-                // Save the bitmap - Commented because the hosted service do it.
+                // Add sign
+                if (height >= 10 && width >= 10)
+                {
+                    for (i = 0; i < sign.GetLength(0); i++)
+                    {
+                        for (j = 0; j < sign.GetLength(1); j++)
+                        {
+                            if (sign[i, j] == 0)
+                            {
+                                bitmap.SetPixel((width - 10) + j, (height - 10) + i, Color.FromArgb(255, 255, 255));
+                            }
+                            else
+                            {
+                                bitmap.SetPixel((width - 10) + j, (height - 10) + i, Color.FromArgb(0, 0, 0));
+                            }
+                        }
+                    }
+                }
+
+                // Save the bitmap
                 // string name = @"%USERPROFILE%\\test.bmp";
                 // string filePath = Environment.ExpandEnvironmentVariables(name);
                 // bitmap.Save(filePath);

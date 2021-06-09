@@ -26,7 +26,8 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
         private static readonly List<IDrawPicture> WavenetDrawers = new()
         {
-            new ChristopherHennuyez()
+            new CedricDegardin(),
+            new ChristopherHennuyez(),
         };
 
         private readonly IConfiguration configuration;

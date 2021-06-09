@@ -21,7 +21,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
         /// <returns>The fully drawed Bitmap with your most advanced painting skills !</returns>
         public Bitmap Draw(int height, int width)
         {
-            if (width >= 1000 && height <= 6000 && width <= 6000 && height >= 1000)
+            if (width <= 6000 && height <= 6000 && width >= 1000 && height >= 1000)
             {
                 int x, y, i, j;
                 Bitmap bitmap = new Bitmap(width, height);

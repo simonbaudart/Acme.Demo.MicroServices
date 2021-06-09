@@ -15,7 +15,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
 
     public class ChristopherHennuyezNoise: IDrawPicture
     {
-        private Random _random = new Random();
+      private Random _random = new Random();
         private int[] _permutation= {151,160,137,91,90,15,
             131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
             190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
@@ -51,7 +51,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
         /// <returns>The fully drawed Bitmap with your most advanced painting skills !</returns>
         public Bitmap Draw(int height, int width)
         {
-            if (width < 1000 && height < 6000 && width > 0 && height > 0) {
+            if (width >= 1000 && height >= 1000 && width <= 6000 && height <= 6000) {
                 int x, y, i, j;
                 Bitmap bitmap = new Bitmap(width, height);
 
@@ -67,6 +67,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
                     // Vertical
                     for(y=1; y<height; y++)
                     {
+                        // Draw pixel at position X, Y
                         bitmap.SetPixel(x, y, colors[x*y]);
                     }
                 }
@@ -90,7 +91,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
                 return bitmap;
             } else {
                 Console.WriteLine("Drawing bitmap with maximum height/width values ! (6000, 1000)");
-                return this.Draw(6000, 1000);
+                return this.Draw(4000, 4000);
             }
         }
 
@@ -152,7 +153,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
                 int index = this._permutation[(int)ij.X % this._permutation.Length];
                 index = this._permutation[(index + (int)ij.Y) % this._permutation.Length];
 
-                Vector2 grad = _gradients[index % _gradients.Length];
+                Vector2 grad = this._gradients[index % this._gradients.Length];
                 total += this.Q(uv.X, uv.Y) * Vector2.Dot(grad, uv);
             }
 
@@ -164,8 +165,8 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
             float[] data = new float[width * height];
             float min = float.MaxValue;
             float max = float.MinValue;
-            int octaves = 3;
-            float frequency = 0.5f;
+            int octaves = 2;
+            float frequency = 1f;
             float amplitude = 1f;
             //var persistence = 0.25f;
 
@@ -185,10 +186,9 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
             }
 
             return data.Select((f) => {
-                int norm = (int) Math.Round(((f - min) / (max - min)) * 256);
+                int norm = (int) Math.Round(((f - min) / (max - min)) * 255);
                 return Color.FromArgb(norm, norm, norm);
             }).ToArray();
         }
     }
-
 }

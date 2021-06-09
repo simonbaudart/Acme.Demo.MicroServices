@@ -22,19 +22,12 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
 
         public Bitmap Draw(int height, int width)
         {
-            this.EnsureBoundaries(height, width);
-
-            var bunchOfPeopleBinary = this.GetPeoples();
-            var bunchOfPeopleBitmap = new List<Bitmap>();
-
-            foreach (var peopleBinary in bunchOfPeopleBinary)
+            if (!this.EnsureBoundaries(height, width))
             {
-                using var peopleImage = new Bitmap(new MemoryStream(peopleBinary));
-                var peopleBitmap = new Bitmap(peopleSize, peopleSize);
-                using var peopleGraphics = Graphics.FromImage(peopleBitmap);
-                peopleGraphics.DrawImage(peopleImage, 0, 0, peopleSize, peopleSize);
-                bunchOfPeopleBitmap.Add(peopleBitmap);
+                return new Bitmap(width, height);
             }
+
+            var bunchOfPeopleBitmap = this.GetBunchOfPeoples();
 
             var bitmap = new Bitmap(width, height);
             using var graphics = Graphics.FromImage(bitmap);
@@ -51,17 +44,36 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Drawers
             return bitmap;
         }
 
-        private void EnsureBoundaries(int height, int width)
+        private bool EnsureBoundaries(int height, int width)
         {
             if (height < 1000 || height > 6000)
             {
-                throw new NotSupportedException("Cannot draw image outside of specified dimensions");
+                return false;
             }
 
             if (width < 1000 || width > 6000)
             {
-                throw new NotSupportedException("Cannot draw image outside of specified dimensions");
+                return false;
             }
+
+            return true;
+        }
+
+        private List<Bitmap> GetBunchOfPeoples()
+        {
+            var bunchOfPeopleBinary = this.GetPeoples();
+            var bunchOfPeopleBitmap = new List<Bitmap>();
+
+            foreach (var peopleBinary in bunchOfPeopleBinary)
+            {
+                using var peopleImage = new Bitmap(new MemoryStream(peopleBinary));
+                var peopleBitmap = new Bitmap(peopleSize, peopleSize);
+                using var peopleGraphics = Graphics.FromImage(peopleBitmap);
+                peopleGraphics.DrawImage(peopleImage, 0, 0, peopleSize, peopleSize);
+                bunchOfPeopleBitmap.Add(peopleBitmap);
+            }
+
+            return bunchOfPeopleBitmap;
         }
 
         private List<byte[]> GetPeoples()

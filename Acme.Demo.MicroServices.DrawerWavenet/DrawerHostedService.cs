@@ -28,7 +28,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
         {
             new CedricDegardin(),
             new ChristopherHennuyez(),
-            // new ChristopherHennuyezNoise(),
+            new ChristopherHennuyezNoise(),
             new SimonBaudart(),
         };
 

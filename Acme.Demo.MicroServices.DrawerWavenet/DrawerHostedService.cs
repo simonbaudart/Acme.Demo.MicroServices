@@ -29,6 +29,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             new CedricDegardin(),
             new ChristopherHennuyez(),
             // new ChristopherHennuyezNoise(),
+            new SimonBaudart(),
         };
 
         private readonly IConfiguration configuration;

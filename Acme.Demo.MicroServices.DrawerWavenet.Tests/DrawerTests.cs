@@ -64,6 +64,17 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Tests
             this.TestStrategy(new SimonBaudart(), width, height);
         }
 
+        [Theory]
+        [InlineData(1000, 1000)]
+        [InlineData(6000, 6000)]
+        [InlineData(42, 6000)]
+        [InlineData(6000, 42)]
+        [InlineData(2000, 2000)]
+        public void SimonBaudartPiriform(int height, int width)
+        {
+            this.TestStrategy(new SimonBaudartPiriform(), width, height);
+        }
+
         private void TestStrategy(IDrawPicture drawPicture, int height, int width)
         {
             using var result = drawPicture.Draw(height, width);

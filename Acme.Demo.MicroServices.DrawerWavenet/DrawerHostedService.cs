@@ -26,10 +26,13 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
         private static readonly List<IDrawPicture> WavenetDrawers = new()
         {
+            new BenjaminPriels(),
             new CedricDegardin(),
             new ChristopherHennuyez(),
             new ChristopherHennuyezNoise(),
+            new ChristopherHennuyezPerlin(),
             new SimonBaudart(),
+            new SimonBaudartPiriform(),
         };
 
         private readonly IConfiguration configuration;
@@ -84,9 +87,11 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             }
         }
 
+        private int currentDrawer = 0;
+
         private void DrawWavenetImage(PictureRequest pictureRequest)
         {
-            var strategy = WavenetDrawers[Dice.Next(0, WavenetDrawers.Count)];
+            var strategy = WavenetDrawers[currentDrawer];
 
             try
             {
@@ -98,6 +103,8 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             {
                 Console.WriteLine(e);
             }
+
+            this.currentDrawer = (this.currentDrawer + 1) %WavenetDrawers.Count;
         }
     }
 }

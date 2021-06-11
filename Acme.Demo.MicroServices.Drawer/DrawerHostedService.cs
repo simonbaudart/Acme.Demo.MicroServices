@@ -18,18 +18,21 @@ namespace Acme.Demo.MicroServices.Drawer
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     public class DrawerHostedService : IHostedService
     {
         private static readonly Random Dice = new();
         private readonly IConfiguration configuration;
         private readonly FileRepository fileRepository;
+        private readonly ILogger logger;
         private ServiceBusReceiver receiver;
 
-        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository)
+        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository, ILogger<DrawerHostedService> logger)
         {
             this.configuration = configuration;
             this.fileRepository = fileRepository;
+            this.logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -75,15 +78,27 @@ namespace Acme.Demo.MicroServices.Drawer
 
                 var pictureRequest = message.Body.ToObjectFromJson<PictureRequest>();
 
-                switch (pictureRequest.PictureType)
+                try
                 {
-                    case PictureType.Random:
-                        this.DrawRandomImage(pictureRequest);
-                        await this.receiver.CompleteMessageAsync(message);
-                        break;
-                    default:
-                        await this.receiver.AbandonMessageAsync(message);
-                        break;
+                    this.logger.LogInformation($"Start drawing a {pictureRequest.PictureType}");
+
+                    switch (pictureRequest.PictureType)
+                    {
+                        case PictureType.Random:
+                            this.DrawRandomImage(pictureRequest);
+                            this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
+                            await this.receiver.CompleteMessageAsync(message);
+                            break;
+                        default:
+                            this.logger.LogWarning($"Cannot draw a {pictureRequest.PictureType}");
+                            await this.receiver.AbandonMessageAsync(message);
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    await this.receiver.AbandonMessageAsync(message);
+                    this.logger.LogError(e, "Cannot draw the image");
                 }
 
                 #endregion

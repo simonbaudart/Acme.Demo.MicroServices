@@ -22,8 +22,6 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
     public class DrawerHostedService : IHostedService
     {
-        private static readonly Random Dice = new();
-
         private static readonly List<IDrawPicture> WavenetDrawers = new()
         {
             new BenjaminPriels(),
@@ -36,11 +34,15 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
         };
 
         private readonly IConfiguration configuration;
+        private readonly FileRepository fileRepository;
+
+        private int currentDrawer;
         private ServiceBusReceiver receiver;
 
-        public DrawerHostedService(IConfiguration configuration)
+        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository)
         {
             this.configuration = configuration;
+            this.fileRepository = fileRepository;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -87,24 +89,22 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             }
         }
 
-        private int currentDrawer = 0;
-
         private void DrawWavenetImage(PictureRequest pictureRequest)
         {
-            var strategy = WavenetDrawers[currentDrawer];
+            var strategy = WavenetDrawers[this.currentDrawer];
 
             try
             {
                 using var bitmap = strategy.Draw(pictureRequest.Height, pictureRequest.Width);
-                var imageName = Guid.NewGuid();
-                bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}-{strategy.GetType().Name}.bmp");
+                var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}-{strategy.GetType().Name}";
+                this.fileRepository.SaveBitmap(imageName, bitmap);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
 
-            this.currentDrawer = (this.currentDrawer + 1) %WavenetDrawers.Count;
+            this.currentDrawer = (this.currentDrawer + 1) % WavenetDrawers.Count;
         }
     }
 }

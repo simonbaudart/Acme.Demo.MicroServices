@@ -23,11 +23,13 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
     {
         private static readonly Random Dice = new();
         private readonly IConfiguration configuration;
+        private readonly FileRepository fileRepository;
         private ServiceBusReceiver receiver;
 
-        public DrawerHostedService(IConfiguration configuration)
+        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository)
         {
             this.configuration = configuration;
+            this.fileRepository = fileRepository;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -110,8 +112,8 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
                 bitmap.SetPixel(x, y, color);
             }
 
-            var imageName = Guid.NewGuid();
-            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.bmp");
+            var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}";
+            this.fileRepository.SaveBitmap(imageName, bitmap);
         }
 
         private int ComputeNextColor(int previous)
@@ -135,8 +137,8 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
                 bitmap.SetPixel(x, y, color);
             }
 
-            var imageName = Guid.NewGuid();
-            bitmap.Save($"c:\\tmp\\drawings\\{pictureRequest.PictureType}-{imageName}.bmp");
+            var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}";
+            this.fileRepository.SaveBitmap(imageName, bitmap);
         }
     }
 }

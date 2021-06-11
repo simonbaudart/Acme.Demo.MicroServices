@@ -27,6 +27,7 @@ namespace Acme.Demo.MicroServices.Drawer
         private readonly FileRepository fileRepository;
         private readonly ILogger logger;
         private ServiceBusReceiver receiver;
+        private ServiceBusSender sender;
 
         public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository, ILogger<DrawerHostedService> logger)
         {
@@ -56,6 +57,7 @@ namespace Acme.Demo.MicroServices.Drawer
             };
 
             this.receiver = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Mentor"]).CreateReceiver("Mentor", receiverOptions);
+            this.sender = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Drawer"]).CreateSender("Drawer");
 
             await foreach (var message in this.receiver.ReceiveMessagesAsync())
             {
@@ -85,7 +87,7 @@ namespace Acme.Demo.MicroServices.Drawer
                     switch (pictureRequest.PictureType)
                     {
                         case PictureType.Random:
-                            this.DrawRandomImage(pictureRequest);
+                            await this.DrawRandomImage(pictureRequest);
                             this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
                             await this.receiver.CompleteMessageAsync(message);
                             break;
@@ -105,7 +107,7 @@ namespace Acme.Demo.MicroServices.Drawer
             }
         }
 
-        private void DrawRandomImage(PictureRequest pictureRequest)
+        private async Task DrawRandomImage(PictureRequest pictureRequest)
         {
             using var bitmap = new Bitmap(pictureRequest.Height, pictureRequest.Width);
 
@@ -118,6 +120,21 @@ namespace Acme.Demo.MicroServices.Drawer
 
             var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}";
             this.fileRepository.SaveBitmap(imageName, bitmap);
+
+            await this.SendPictureDone(imageName);
+        }
+
+        private async Task SendPictureDone(string imageName)
+        {
+            var pictureDone = new PictureDone
+            {
+                ImageName = imageName
+            };
+
+            var message = new ServiceBusMessage();
+            message.ContentType = "application/json";
+            message.Body = new BinaryData(pictureDone);
+            await this.sender.SendMessageAsync(message);
         }
     }
 }

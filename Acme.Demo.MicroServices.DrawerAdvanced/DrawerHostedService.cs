@@ -27,6 +27,7 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
         private readonly FileRepository fileRepository;
         private readonly ILogger logger;
         private ServiceBusReceiver receiver;
+        private ServiceBusSender sender;
 
         public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository, ILogger<DrawerHostedService> logger)
         {
@@ -46,6 +47,16 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
             await this.receiver.DisposeAsync();
         }
 
+        private int ComputeNextColor(int previous)
+        {
+            if (previous == -1)
+            {
+                return Dice.Next(0, 256);
+            }
+
+            return Dice.Next(Math.Max(0, previous - 10), Math.Min(256, previous + 10));
+        }
+
         private async Task DoWork()
         {
             var receiverOptions = new ServiceBusReceiverOptions
@@ -56,6 +67,7 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
             };
 
             this.receiver = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Mentor"]).CreateReceiver("Mentor", receiverOptions);
+            this.sender = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Drawer"]).CreateSender("Drawer");
 
             await foreach (var message in this.receiver.ReceiveMessagesAsync())
             {
@@ -83,12 +95,12 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
                     switch (pictureRequest.PictureType)
                     {
                         case PictureType.Advanced:
-                            this.DrawAdvancedImage(pictureRequest);
+                            await this.DrawAdvancedImage(pictureRequest);
                             this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
                             await this.receiver.CompleteMessageAsync(message);
                             break;
                         case PictureType.Random:
-                            this.DrawRandomImage(pictureRequest);
+                            await this.DrawRandomImage(pictureRequest);
                             this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
                             await this.receiver.CompleteMessageAsync(message);
                             break;
@@ -107,7 +119,7 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
             }
         }
 
-        private void DrawAdvancedImage(PictureRequest pictureRequest)
+        private async Task DrawAdvancedImage(PictureRequest pictureRequest)
         {
             int previousA = -1, previousR = -1, previousG = -1, previousB = -1;
 
@@ -127,19 +139,11 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
 
             var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}";
             this.fileRepository.SaveBitmap(imageName, bitmap);
+
+            await this.SendPictureDone(imageName);
         }
 
-        private int ComputeNextColor(int previous)
-        {
-            if (previous == -1)
-            {
-                return Dice.Next(0, 256);
-            }
-
-            return Dice.Next(Math.Max(0, previous - 10), Math.Min(256, previous + 10));
-        }
-
-        private void DrawRandomImage(PictureRequest pictureRequest)
+        private async Task DrawRandomImage(PictureRequest pictureRequest)
         {
             using var bitmap = new Bitmap(pictureRequest.Height, pictureRequest.Width);
 
@@ -152,6 +156,21 @@ namespace Acme.Demo.MicroServices.DrawerAdvanced
 
             var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}";
             this.fileRepository.SaveBitmap(imageName, bitmap);
+
+            await this.SendPictureDone(imageName);
+        }
+
+        private async Task SendPictureDone(string imageName)
+        {
+            var pictureDone = new PictureDone
+            {
+                ImageName = imageName
+            };
+
+            var message = new ServiceBusMessage();
+            message.ContentType = "application/json";
+            message.Body = new BinaryData(pictureDone);
+            await this.sender.SendMessageAsync(message);
         }
     }
 }

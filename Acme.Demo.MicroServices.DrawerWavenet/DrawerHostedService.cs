@@ -40,6 +40,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
         private int currentDrawer;
         private ServiceBusReceiver receiver;
+        private ServiceBusSender sender;
 
         public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository, ILogger<DrawerHostedService> logger)
         {
@@ -69,6 +70,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             };
 
             this.receiver = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Mentor"]).CreateReceiver("Mentor", receiverOptions);
+            this.sender = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Drawer"]).CreateSender("Drawer");
 
             await foreach (var message in this.receiver.ReceiveMessagesAsync())
             {
@@ -83,7 +85,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
                     {
                         case PictureType.Advanced:
                             // Yes, Wavenet only draw advanced images !
-                            this.DrawWavenetImage(pictureRequest);
+                            await this.DrawWavenetImage(pictureRequest);
                             this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
                             await this.receiver.CompleteMessageAsync(message);
                             break;
@@ -102,22 +104,30 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             }
         }
 
-        private void DrawWavenetImage(PictureRequest pictureRequest)
+        private async Task DrawWavenetImage(PictureRequest pictureRequest)
         {
             var strategy = WavenetDrawers[this.currentDrawer];
 
-            try
-            {
-                using var bitmap = strategy.Draw(pictureRequest.Height, pictureRequest.Width);
-                var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}-{strategy.GetType().Name}";
-                this.fileRepository.SaveBitmap(imageName, bitmap);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            using var bitmap = strategy.Draw(pictureRequest.Height, pictureRequest.Width);
+            var imageName = $"{pictureRequest.PictureType}-{Guid.NewGuid()}-{strategy.GetType().Name}";
+            this.fileRepository.SaveBitmap(imageName, bitmap);
+
+            await this.SendPictureDone(imageName);
 
             this.currentDrawer = (this.currentDrawer + 1) % WavenetDrawers.Count;
+        }
+
+        private async Task SendPictureDone(string imageName)
+        {
+            var pictureDone = new PictureDone
+            {
+                ImageName = imageName
+            };
+
+            var message = new ServiceBusMessage();
+            message.ContentType = "application/json";
+            message.Body = new BinaryData(pictureDone);
+            await this.sender.SendMessageAsync(message);
         }
     }
 }

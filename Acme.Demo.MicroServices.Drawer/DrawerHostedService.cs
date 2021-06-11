@@ -52,7 +52,7 @@ namespace Acme.Demo.MicroServices.Drawer
                 SubQueue = SubQueue.None
             };
 
-            this.receiver = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Drawer"]).CreateReceiver("Mentor", receiverOptions);
+            this.receiver = new ServiceBusClient(this.configuration["ServiceBusConnectionStrings:Mentor"]).CreateReceiver("Mentor", receiverOptions);
 
             await foreach (var message in this.receiver.ReceiveMessagesAsync())
             {

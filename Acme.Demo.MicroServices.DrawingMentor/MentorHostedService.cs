@@ -17,16 +17,19 @@ namespace Acme.Demo.MicroServices.DrawingMentor
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     public class MentorHostedService : IHostedService
     {
         private static readonly Random Dice = new();
         private readonly IConfiguration configuration;
+        private readonly ILogger logger;
         private Timer timer;
 
-        public MentorHostedService(IConfiguration configuration)
+        public MentorHostedService(IConfiguration configuration, ILogger<MentorHostedService> logger)
         {
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -71,6 +74,7 @@ namespace Acme.Demo.MicroServices.DrawingMentor
                 Width = Dice.Next(10, 61) * 100,
             };
 
+            this.logger.LogInformation($"Require to draw a new picture : {pictureRequest.PictureType} ({pictureRequest.Width}x{pictureRequest.Height})");
             var message = new ServiceBusMessage("Create Picture");
             message.ContentType = "application/json";
             message.Body = new BinaryData(pictureRequest);

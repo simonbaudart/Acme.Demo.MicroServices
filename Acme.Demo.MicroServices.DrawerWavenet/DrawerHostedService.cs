@@ -19,6 +19,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     public class DrawerHostedService : IHostedService
     {
@@ -35,14 +36,16 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
         private readonly IConfiguration configuration;
         private readonly FileRepository fileRepository;
+        private readonly ILogger logger;
 
         private int currentDrawer;
         private ServiceBusReceiver receiver;
 
-        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository)
+        public DrawerHostedService(IConfiguration configuration, FileRepository fileRepository, ILogger<DrawerHostedService> logger)
         {
             this.configuration = configuration;
             this.fileRepository = fileRepository;
+            this.logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -73,16 +76,26 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
 
                 var pictureRequest = message.Body.ToObjectFromJson<PictureRequest>();
 
-                switch (pictureRequest.PictureType)
+                try
                 {
-                    case PictureType.Advanced:
-                        // Yes, Wavenet only draw advanced images !
-                        this.DrawWavenetImage(pictureRequest);
-                        await this.receiver.CompleteMessageAsync(message);
-                        break;
-                    default:
-                        await this.receiver.AbandonMessageAsync(message);
-                        break;
+                    this.logger.LogInformation($"Start drawing a {pictureRequest.PictureType}");
+                    switch (pictureRequest.PictureType)
+                    {
+                        case PictureType.Advanced:
+                            // Yes, Wavenet only draw advanced images !
+                            this.DrawWavenetImage(pictureRequest);
+                            this.logger.LogInformation($"End drawing a {pictureRequest.PictureType}");
+                            await this.receiver.CompleteMessageAsync(message);
+                            break;
+                        default:
+                            await this.receiver.AbandonMessageAsync(message);
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    await this.receiver.AbandonMessageAsync(message);
+                    this.logger.LogError(e, "Cannot draw the image");
                 }
 
                 #endregion

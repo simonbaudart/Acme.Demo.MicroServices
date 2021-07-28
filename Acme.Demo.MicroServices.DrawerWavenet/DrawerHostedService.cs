@@ -30,6 +30,7 @@ namespace Acme.Demo.MicroServices.DrawerWavenet
             new ChristopherHennuyez(),
             new ChristopherHennuyezNoise(),
             new ChristopherHennuyezPerlin(),
+            new ChristopherHennuyezRandomPatternDrawing(),
             new SimonBaudart(),
             new SimonBaudartPiriform(),
         };

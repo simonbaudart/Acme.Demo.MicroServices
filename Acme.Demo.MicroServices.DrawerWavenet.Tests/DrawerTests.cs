@@ -17,6 +17,17 @@ namespace Acme.Demo.MicroServices.DrawerWavenet.Tests
     public class DrawerTests
     {
         [Theory]
+        [InlineData(1000, 1000)] // Limite inférieure
+        [InlineData(6000, 6000)] // Limite supérieure
+        [InlineData(2000, 2000)] // Cas moyen
+        [InlineData(42, 6000)] // Cas d'erreur, ne devrait pas survenir mais éviter une exception :)
+        [InlineData(6000, 42)] // Cas d'erreur, ne devrait pas survenir mais éviter une exception :)
+        public void AntoineRichez(int height, int width)
+        {
+            using var result = new AntoineRichez().Draw(height, width);
+        }
+
+        [Theory]
         [InlineData(1000, 1000)]
         [InlineData(6000, 6000)]
         [InlineData(42, 6000)]

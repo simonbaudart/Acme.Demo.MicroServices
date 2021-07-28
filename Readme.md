@@ -52,4 +52,5 @@ Le 30 juillet, Simon Baudart nous proposera un Tech-Tips d’un nouveau genre :
 8. More Powerful !!! Wavenet Drawers !
     - Présentation du projet
     - Création de l'image
+    - On est plusieurs chez Wavenet !!! Et on a du CPU et de la RAM !
 9. Conclusion et questions :)
